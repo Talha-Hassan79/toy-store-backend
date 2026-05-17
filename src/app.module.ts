@@ -16,24 +16,36 @@ import { join } from 'path';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env', '../.env'],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: configService.get('DATABASE_URL') || 'database.sqlite',
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('DB_SYNC') === 'true',
-      }),
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+        if (!databaseUrl) {
+          throw new Error('DATABASE_URL is required for Postgres');
+        }
+
+        const sslEnabled = configService.get('DB_SSL') === 'true';
+
+        return {
+          type: 'postgres',
+          url: databaseUrl,
+          ssl: sslEnabled ? { rejectUnauthorized: false } : false,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/migrations/*{.ts,.js}'],
+          synchronize: false,
+        };
+      },
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
-    ProductsModule, 
+    ProductsModule,
     OrdersModule,
     AuthModule,
-    MessagesModule
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
