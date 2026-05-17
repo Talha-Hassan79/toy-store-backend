@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsEnum, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {
@@ -20,8 +20,7 @@ export class CreateProductDto {
   status: string;
 
   @IsOptional()
-  @IsString()
-  image?: string;
+  images?: string[] | any;
 }
 
 export class UpdateProductDto {
@@ -48,6 +47,5 @@ export class UpdateProductDto {
   status?: string;
 
   @IsOptional()
-  @IsString()
-  image?: string;
+  images?: string[] | any;
 }

@@ -20,6 +20,6 @@ export class Product {
   @Column()
   status: string;
 
-  @Column()
-  image: string;
+  @Column('simple-json')
+  images: string[];
 }

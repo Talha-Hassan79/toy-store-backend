@@ -14,11 +14,11 @@ export class ProductsService implements OnModuleInit {
     const count = await this.productsRepository.count();
     if (count === 0) {
       await this.productsRepository.save([
-        { name: 'Turbo Racing Car', category: 'Vehicles', price: 29.99, stock: 45, status: 'In Stock', image: 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&q=80&w=150' },
-        { name: 'Magic Builder Blocks', category: 'Educational', price: 49.99, stock: 12, status: 'Low Stock', image: 'https://images.unsplash.com/photo-1585338107529-13afc5f01586?auto=format&fit=crop&q=80&w=150' },
-        { name: 'Fluffy Bear Plush', category: 'Soft Toys', price: 19.99, stock: 0, status: 'Out of Stock', image: 'https://images.unsplash.com/photo-1559449182-2624b30420e7?auto=format&fit=crop&q=80&w=150' },
-        { name: 'Science Kit Pro', category: 'Learning', price: 79.99, stock: 88, status: 'In Stock', image: 'https://images.unsplash.com/photo-1530210124550-912dc1381cb8?auto=format&fit=crop&q=80&w=150' },
-        { name: 'Dino Explorer Set', category: 'Figures', price: 34.99, stock: 25, status: 'In Stock', image: 'https://images.unsplash.com/photo-1516937941344-00b4e0337589?auto=format&fit=crop&q=80&w=150' },
+        { name: 'Turbo Racing Car', category: 'Vehicles', price: 29.99, stock: 45, status: 'In Stock', images: ['https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&q=80&w=150'] },
+        { name: 'Magic Builder Blocks', category: 'Educational', price: 49.99, stock: 12, status: 'Low Stock', images: ['https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80&w=150'] },
+        { name: 'Fluffy Bear Plush', category: 'Soft Toys', price: 19.99, stock: 0, status: 'Out of Stock', images: ['https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=150'] },
+        { name: 'Science Kit Pro', category: 'Learning', price: 79.99, stock: 88, status: 'In Stock', images: ['https://images.unsplash.com/photo-1530210124550-912dc1381cb8?auto=format&fit=crop&q=80&w=150'] },
+        { name: 'Dino Explorer Set', category: 'Figures', price: 34.99, stock: 25, status: 'In Stock', images: ['https://images.unsplash.com/photo-1516937941344-00b4e0337589?auto=format&fit=crop&q=80&w=150'] },
       ]);
     }
   }

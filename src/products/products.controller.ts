@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -26,7 +26,7 @@ export class ProductsController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image', {
+  @UseInterceptors(FilesInterceptor('images', 5, {
     storage: diskStorage({
       destination: './uploads',
       filename: (req, file, cb) => {
@@ -35,16 +35,28 @@ export class ProductsController {
       }
     })
   }))
-  create(@Body() product: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
-    if (file) {
-      const baseUrl = this.configService.get('APP_URL') || 'http://localhost:3000';
-      product.image = `${baseUrl}/uploads/${file.filename}`;
+  create(@Body() product: CreateProductDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    const baseUrl = this.configService.get('APP_URL') || 'http://localhost:3000';
+    let existingImages: string[] = [];
+    if (product.images) {
+        try {
+            existingImages = typeof product.images === 'string' ? JSON.parse(product.images) : product.images;
+        } catch(e) {
+            existingImages = Array.isArray(product.images) ? product.images : [product.images];
+        }
     }
+    
+    let uploadedImages: string[] = [];
+    if (files && files.length > 0) {
+      uploadedImages = files.map(f => `${baseUrl}/uploads/${f.filename}`);
+    }
+    
+    product.images = [...existingImages, ...uploadedImages];
     return this.productsService.create(product);
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('image', {
+  @UseInterceptors(FilesInterceptor('images', 5, {
     storage: diskStorage({
       destination: './uploads',
       filename: (req, file, cb) => {
@@ -53,11 +65,27 @@ export class ProductsController {
       }
     })
   }))
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProductDto, @UploadedFile() file: Express.Multer.File) {
-    if (file) {
-      const baseUrl = this.configService.get('APP_URL') || 'http://localhost:3000';
-      data.image = `${baseUrl}/uploads/${file.filename}`;
+  update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProductDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    const baseUrl = this.configService.get('APP_URL') || 'http://localhost:3000';
+    
+    let existingImages: string[] = [];
+    if (data.images) {
+        try {
+            existingImages = typeof data.images === 'string' ? JSON.parse(data.images) : data.images;
+        } catch(e) {
+            existingImages = Array.isArray(data.images) ? data.images : [data.images];
+        }
     }
+    
+    let uploadedImages: string[] = [];
+    if (files && files.length > 0) {
+      uploadedImages = files.map(f => `${baseUrl}/uploads/${f.filename}`);
+    }
+    
+    if (files && files.length > 0 || data.images) {
+        data.images = [...existingImages, ...uploadedImages];
+    }
+
     return this.productsService.update(id, data);
   }
 
