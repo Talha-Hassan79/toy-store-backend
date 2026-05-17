@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: toy-store-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      # We use SQLite with a persistent disk so data isn't lost on deploy
+      - key: DATABASE_URL
+        value: /data/database.sqlite
+      # Make sure to update ALLOWED_ORIGINS to your Vercel domains after deployment
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
