@@ -57,7 +57,7 @@ export class AuthService {
   }
 
   private async sendVerificationEmail(email: string, name: string, token: string) {
-    const appUrl = this.configService.get('APP_URL') || 'http://localhost:3000';
+    const appUrl = this.configService.get('APP_URL') || 'https://toy-store-backend-i43o.onrender.com';
     const url = `${appUrl}/auth/verify/${token}`;
 
     const mailOptions = {
@@ -89,7 +89,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<any> {
     const user = await this.userRepository.findOne({ where: { verificationToken: token } });
-    
+
     if (!user) {
       throw new NotFoundException('Invalid or expired verification token');
     }
