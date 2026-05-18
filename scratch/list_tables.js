@@ -1,14 +1,27 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Client } = require('pg');
+require('dotenv').config();
 
-const dbPath = path.join(__dirname, 'database.sqlite');
-const db = new sqlite3.Database(dbPath);
+async function listTables() {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
 
-db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
-  if (err) {
-    console.error(err.message);
-    return;
+  try {
+    await client.connect();
+
+    const result = await client.query(`
+      SELECT table_name FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      ORDER BY table_name;
+    `);
+
+    console.log("Tables in database:", result.rows.map(r => r.table_name).join(', '));
+  } catch (error) {
+    console.error("Error:", error.message);
+  } finally {
+    await client.end();
   }
-  console.log("Tables in database:", rows.map(r => r.name).join(', '));
-  db.close();
-});
+}
+
+listTables().catch(console.error);

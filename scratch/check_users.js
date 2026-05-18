@@ -1,19 +1,28 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Client } = require('pg');
+require('dotenv').config();
 
-const dbPath = path.resolve(__dirname, '../database.sqlite');
-const db = new sqlite3.Database(dbPath);
+async function checkUsers() {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
 
-db.all("SELECT id, name, email, role FROM user", [], (err, rows) => {
-  if (err) {
-    console.error(err.message);
-    return;
+  try {
+    await client.connect();
+
+    const result = await client.query('SELECT "id", "name", "email", "role", "isVerified" FROM "user"');
+
+    if (result.rows.length === 0) {
+      console.log("No users found in the database.");
+    } else {
+      console.log("Users in database:");
+      console.table(result.rows);
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+  } finally {
+    await client.end();
   }
-  if (rows.length === 0) {
-    console.log("No users found in the database.");
-  } else {
-    console.log("Users in database:");
-    console.table(rows);
-  }
-  db.close();
-});
+}
+
+checkUsers().catch(console.error);
