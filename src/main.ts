@@ -13,13 +13,17 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
+  const allowedOrigins = configService.get<string>('ALLOWED_ORIGINS');
+
   app.enableCors({
-    origin: configService.get('ALLOWED_ORIGINS')?.split(',') || '*',
+    origin: allowedOrigins ? allowedOrigins.split(',') : true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
 
-  const port = process.env.PORT || configService.get('PORT') || 3000;
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  const port = process.env.PORT || configService.get<number>('PORT') || 3000;
+
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`Application running on: http://localhost:${port}`);
 }
 bootstrap();
