@@ -25,6 +25,9 @@ export class CreateProductDto {
 
 export class UpdateProductDto {
   @IsOptional()
+  id?: any;
+
+  @IsOptional()
   @IsString()
   name?: string;
 

@@ -86,6 +86,8 @@ export class ProductsController {
         data.images = [...existingImages, ...uploadedImages];
     }
 
+    delete data.id;
+
     return this.productsService.update(id, data);
   }
 
