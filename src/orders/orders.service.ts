@@ -51,7 +51,12 @@ export class OrdersService implements OnModuleInit {
     }
   }
 
-  findAll() {
+  findAll(email?: string) {
+    if (email) {
+      return this.ordersRepository.find({
+        where: { email },
+      });
+    }
     return this.ordersRepository.find();
   }
 
